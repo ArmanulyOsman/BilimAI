@@ -1,0 +1,67 @@
+{% extends 'core/base.html' %}
+{% block title %}Мұғалім панелі — BilimAI{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <h2 class="page-title">👋 Қайырлы күн, {{ user.first_name }}!</h2>
+      <p class="page-subtitle">Сіздің бақылауыңыздағы пәндер тізімі</p>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top:24px;">
+    {% for subject in subjects %}
+    <a href="{% url 'teacher_subject_quizzes' subject.id %}" class="subject-card teacher-card">
+      <div class="subject-icon">{{ subject.icon }}</div>
+      <div class="subject-info">
+        <div class="subject-name">{{ subject.name }}</div>
+        <div class="subject-count">{{ subject.quizzes.count }} тест жарияланды</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+    {% empty %}
+    <div class="empty-state" style="grid-column: 1 / -1;">
+      <div class="empty-icon">📂</div>
+      <p>Сізге әлі пәндер бекітілмеген.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .teacher-card { display: flex; align-items: center; text-decoration: none; color: inherit; position: relative; }
+  .card-arrow { position: absolute; right: 20px; color: #cbd5e1; font-size: 20px; }
+  .teacher-card:hover .card-arrow { color: #1a73e8; transform: translateX(5px); transition: 0.3s; }
+  .btn-link {
+    text-decoration: none;
+    color: #64748b;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.btn-link:hover { color: #1a73e8; }
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.table tr:hover {
+    background-color: #fcfdfe;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.page-subtitle {
+    color: #64748b;
+    font-size: 16px;
+}
+</style>
+{% endblock %}

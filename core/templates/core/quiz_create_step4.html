@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% block title %}4-қадам: Тест — BilimAI{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="steps-container">
+    <div class="step active"><div class="step-number">✓</div></div>
+    <div class="step active"><div class="step-number">✓</div></div>
+    <div class="step active"><div class="step-number">✓</div></div>
+    <div class="step active"><div class="step-number">4</div><div class="step-label">2-блок (Тест)</div></div>
+    <div class="step"><div class="step-number">5</div><div class="step-label">Аяқтау</div></div>
+  </div>
+
+  <div class="grid-2-1" style="display:grid; grid-template-columns: 1fr 400px; gap:24px;">
+    <div class="card">
+      <h3>Тест сұрақтары ({{ test_questions.count }})</h3>
+      {% for q in test_questions %}
+      <div style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:15px;">
+        <div style="display:flex; justify-content:space-between; font-weight:bold;">
+          <span>{{ forloop.counter }}. {{ q.question_text }} ({{ q.points }} балл)</span>
+          <form method="post">{% csrf_token %}<input type="hidden" name="action" value="delete_question"><input type="hidden" name="question_id" value="{{ q.id }}"><button type="submit" class="btn-link" style="color:red; border:none; background:none; cursor:pointer;">Өшіру</button></form>
+        </div>
+        <ul style="margin-top:10px; font-size:14px; list-style:none;">
+          {% for a in q.answers.all %}
+          <li style="color: {% if a.is_correct %}#10b981{% else %}#64748b{% endif %};">
+            {% if a.is_correct %}●{% else %}○{% endif %} {{ a.answer_text }}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="card">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_question">
+        <label class="form-label">Сұрақ мәтіні</label>
+        <textarea name="question_text" class="form-control" required></textarea>
+        
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Нұсқалар (Дұрысын белгілеңіз)</label>
+          {% for i in "1234" %}
+          <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
+            <input type="radio" name="correct_answer" value="{{ i }}" {% if i == "1" %}checked{% endif %}>
+            <input type="text" name="answer_{{ i }}" class="form-control" placeholder="{{ i }}-нұсқа" required>
+          </div>
+          {% endfor %}
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Балл</label>
+          <input type="number" name="points" class="form-control" value="10">
+        </div>
+        <button type="submit" class="btn btn-outline btn-full">+ Сұрақты қосу</button>
+      </form>
+      <hr>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="next">
+        <label class="form-label">Бұл блокқа уақыт (мин)</label>
+        <input type="number" name="block3_time_minutes" class="form-control" value="20">
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;">Аяқтау →</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

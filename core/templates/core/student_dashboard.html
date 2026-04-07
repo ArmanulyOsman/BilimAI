@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+{% block title %}Пәндер — BilimAI{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="page-header">
+    <div class="page-title">👋 Сәлем, {{ user.first_name }}!</div>
+    <div class="page-subtitle">Қай пәнді оқығыңыз келеді?</div>
+  </div>
+
+  {% if subjects %}
+    <div class="grid-3">
+      {% for subject in subjects %}
+      <a href="/subject/{{ subject.id }}/" class="subject-card">
+        <div class="subject-icon">{{ subject.icon }}</div>
+        <div>
+          <div class="subject-name">{{ subject.name }}</div>
+          <div class="subject-count">{{ subject.quizzes.count }} тест</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">Пәндер әлі жоқ</div>
+      <div class="empty-desc">Мұғалімдер тесттер қосқанда олар осында пайда болады</div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

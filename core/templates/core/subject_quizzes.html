@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ subject.name }} — BilimAI{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <a href="/dashboard/" class="back-link">← Пәндерге қайту</a>
+
+  <div class="page-header">
+    <div class="page-title">{{ subject.icon }} {{ subject.name }}</div>
+    <div class="page-subtitle">Тест таңдаңыз</div>
+  </div>
+
+  {% if quiz_list %}
+    <div style="display:flex;flex-direction:column;gap:12px">
+      {% for item in quiz_list %}
+      {% with quiz=item.quiz attempt=item.attempt %}
+      <div class="quiz-card">
+        <div class="quiz-info">
+          <div class="quiz-title">{{ quiz.title }}</div>
+          <div class="quiz-teacher">👤 {{ quiz.teacher.full_name }}</div>
+          <div class="quiz-meta" style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-muted">⏱ Теория: {{ quiz.theory_time_minutes }} мин</span>
+            <span class="badge badge-muted">✍️ Блок 2: {{ quiz.block2_time_minutes }} мин</span>
+            <span class="badge badge-muted">📝 Тест: {{ quiz.block3_time_minutes }} мин</span>
+          </div>
+        </div>
+        <div style="flex-shrink:0">
+          {% if attempt %}
+            {% if attempt.status == 'completed' %}
+              <div style="text-align:right">
+                <a href="/quiz/results/{{ attempt.id }}/" class="btn btn-outline btn-sm">📊 Нәтиже</a>
+                {% if attempt.passed %}
+                  <div style="margin-top:6px"><span class="badge badge-success">✅ Өтті</span></div>
+                {% else %}
+                  <div style="margin-top:6px"><span class="badge badge-danger">❌ Өтпеді</span></div>
+                {% endif %}
+              </div>
+            {% else %}
+              <a href="/quiz/{{ quiz.id }}/start/" class="btn btn-primary btn-sm">▶️ Жалғастыру</a>
+            {% endif %}
+          {% else %}
+            <a href="/quiz/{{ quiz.id }}/start/" class="btn btn-primary btn-sm">🚀 Бастау</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endwith %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📝</div>
+      <div class="empty-title">Тесттер жоқ</div>
+      <div class="empty-desc">Бұл пән бойынша әзір тесттер жоқ</div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

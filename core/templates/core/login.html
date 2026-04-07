@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кіру — BilimAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">🎓</div>
+      <div class="auth-title">BilimAI-ға кіріңіз</div>
+      <div class="auth-subtitle">Білімге жол ашылды</div>
+    </div>
+    <div class="auth-body">
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Пайдаланушы аты</label>
+          <input type="text" name="username" class="form-control" placeholder="Пайдаланушы атыңызды енгізіңіз" autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Құпиясөз</label>
+          <input type="password" name="password" class="form-control" placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:8px">
+          🚀 Кіру
+        </button>
+      </form>
+
+      <div class="auth-footer" style="margin-top:24px">
+        Тіркелмеген бе? <a href="/register/">Тіркелу</a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

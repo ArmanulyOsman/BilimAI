@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ subject.name }} — Тесттер{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="page-header">
+    <a href="{% url 'teacher_dashboard' %}" class="btn-link">← Артқа</a>
+    <h2 class="page-title">{{ subject.icon }} {{ subject.name }}</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+      <p class="page-subtitle">Осы пән бойынша жасалған тесттер</p>
+      <a href="{% url 'quiz_create_step1' subject.id %}" class="btn btn-primary">+ Жаңа тест жасау</a>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px; padding:0;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Тест атауы</th>
+          <th>Өту балы</th>
+          <th>Тапсырғандар</th>
+          <th>Әрекет</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for quiz in quizzes %}
+        <tr>
+          <td><strong>{{ quiz.title }}</strong></td>
+          <td>{{ quiz.passing_score }}%</td>
+          <td><span class="badge">{{ quiz.attempts.count }} оқушы</span></td>
+          <td>
+            <a href="{% url 'teacher_quiz_detail' quiz.id %}" class="btn btn-outline btn-sm">Нәтижелерді көру</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align:center; padding:40px; color:#64748b;">Бұл пән бойынша әлі тест жасалмаған.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+    .btn-link {
+    text-decoration: none;
+    color: #64748b;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.btn-link:hover { color: #1a73e8; }
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.table tr:hover {
+    background-color: #fcfdfe;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.page-subtitle {
+    color: #64748b;
+    font-size: 16px;
+}
+</style>
+{% endblock %}

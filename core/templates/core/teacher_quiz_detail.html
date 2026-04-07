@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ quiz.title }} — Нәтижелер{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="page-header">
+    <a href="{% url 'teacher_subject_quizzes' quiz.subject.id %}" class="btn-link">← Тесттерге қайту</a>
+    <h2 class="page-title">«{{ quiz.title }}» нәтижелері</h2>
+  </div>
+
+  <div class="card" style="margin-top:24px; padding:0;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Оқушының аты-жөні</th>
+          <th>Тапсырған уақыты</th>
+          <th>Тест балы (Блок 3)</th>
+          <th>Статус</th>
+          <th>Әрекет</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for attempt in attempts %}
+        <tr>
+          <td>{{ attempt.student.full_name }}</td>
+          <td>{{ attempt.completed_at|date:"d.m.Y, H:i" }}</td>
+          <td><strong>{{ attempt.block3_score }}</strong></td>
+          <td>
+            {% if attempt.block2_graded %}
+              <span class="badge badge-success">Тексерілді</span>
+            {% else %}
+              <span class="badge badge-warning">Тексеру қажет</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'teacher_grade_attempt' attempt.id %}" class="btn btn-primary btn-sm">
+              {% if attempt.block2_graded %}Қайта қарау{% else %}Тексеру{% endif %}
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="text-align:center; padding:40px; color:#64748b;">Бұл тестті әлі ешкім тапсырмады.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .table { width: 100%; border-collapse: collapse; }
+  .table th, .table td { padding: 16px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+  .table th { background: #f8fafc; color: #64748b; font-size: 13px; text-transform: uppercase; }
+  .badge-warning { background: #fffbeb; color: #92400e; }
+  .badge-success { background: #ecfdf5; color: #065f46; }
+</style>
+{% endblock %}

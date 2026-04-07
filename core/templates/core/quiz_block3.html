@@ -1,0 +1,137 @@
+{% extends 'core/base.html' %}
+{% block title %}3-Блок: Тест — {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="quiz-block-wrap">
+
+    <div class="steps">
+      <div class="step active done">
+        <div class="step-dot">✓</div>
+        <span class="step-label">Теория</span>
+      </div>
+      <div class="step active done">
+        <div class="step-dot">✓</div>
+        <span class="step-label">Ашық сұрақтар</span>
+      </div>
+      <div class="step active">
+        <div class="step-dot">3</div>
+        <span class="step-label">Тест</span>
+      </div>
+    </div>
+
+    <div class="block-header">
+      <div class="block-info">
+        <div class="block-label">📝 3-Блок (Қорытынды)</div>
+        <div class="block-title">Көп таңдаулы сұрақтар</div>
+        <p class="text-muted" style="margin-top: 4px;">Дұрыс жауапты таңдаңыз. Әр сұрақтың өз баллы бар.</p>
+      </div>
+      <div class="timer-box" id="timerBox">
+        <div class="timer-label">Қалған уақыт</div>
+        <div class="timer-value" id="timerValue">--:--</div>
+      </div>
+    </div>
+
+    <form method="post" id="quizForm">
+      {% csrf_token %}
+      
+      <div class="questions-list" style="margin-top: 30px;">
+        {% for q in questions %}
+        <div class="quiz-card" style="margin-bottom: 24px; padding: 24px; background: #fff; border-radius: 16px; border: 1px solid #eef2f6; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+          <div class="q-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <div style="font-size: 18px; font-weight: 700; color: #1e293b;">
+              {{ forloop.counter }}. {{ q.question_text }}
+            </div>
+            <span class="badge" style="background: #f1f5f9; color: #64748b; font-size: 12px; padding: 4px 10px;">{{ q.points }} балл</span>
+          </div>
+
+          <div class="answers-grid" style="display: grid; gap: 12px;">
+            {% for answer in q.answers.all %}
+            <label class="answer-option" style="cursor: pointer; display: flex; align-items: center; padding: 14px 18px; border: 2px solid #f1f5f9; border-radius: 12px; transition: all 0.2s;">
+              <input type="radio" name="q_{{ q.id }}" value="{{ answer.id }}" 
+                     {% if existing.q.id == answer.id %}checked{% endif %}
+                     style="width: 18px; height: 18px; margin-right: 12px; accent-color: #1a73e8;">
+              <span style="font-size: 16px; color: #475569;">{{ answer.answer_text }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="form-actions" style="margin-top: 40px; display: flex; justify-content: center; padding-bottom: 60px;">
+        <button type="submit" class="btn btn-primary btn-lg" style="min-width: 280px; padding: 16px 32px; font-size: 18px; box-shadow: 0 10px 15px -3px rgba(26, 115, 232, 0.3);">
+          🏁 Тестті аяқтау және нәтижені көру
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<style>
+  /* Радио батырма таңдалғанда стильді өзгерту */
+  .answer-option:has(input:checked) {
+    background-color: #f0f7ff;
+    border-color: #1a73e8 !important;
+    color: #1a73e8;
+  }
+  
+  .answer-option:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  .step.done .step-dot {
+    background: #10b981 !important;
+    border-color: #10b981 !important;
+    color: white !important;
+  }
+
+  .timer-box.danger {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #b91c1c;
+  }
+
+  .timer-box.danger #timerValue {
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0.5; }
+  }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const totalSeconds = {{ time_seconds }};
+let remaining = totalSeconds;
+const timerEl = document.getElementById('timerValue');
+const timerBox = document.getElementById('timerBox');
+const form = document.getElementById('quizForm');
+
+function updateTimer() {
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+  if (remaining <= 60) {
+    timerBox.className = 'timer-box danger';
+  } else if (remaining <= 180) {
+    timerBox.className = 'timer-box warning';
+  }
+
+  if (remaining <= 0) {
+    clearInterval(interval);
+    // Уақыт біткенде форманы автоматты түрде жіберу
+    form.submit();
+  }
+  remaining--;
+}
+
+updateTimer();
+const interval = setInterval(updateTimer, 1000);
+</script>
+{% endblock %}

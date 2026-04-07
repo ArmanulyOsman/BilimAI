@@ -1,0 +1,150 @@
+{% extends 'core/base.html' %}
+{% block title %}Нәтиже: {{ attempt.quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="results-wrap" style="max-width: 900px; margin: 0 auto;">
+    
+    <div class="card result-header-card {% if attempt.passed %}passed{% else %}failed{% endif %}" 
+         style="text-align: center; padding: 40px; border-radius: 24px; margin-bottom: 30px; position: relative; overflow: hidden;">
+      
+      <div class="result-icon" style="font-size: 64px; margin-bottom: 16px;">
+        {% if attempt.passed %}🎉{% else %}😕{% endif %}
+      </div>
+      
+      <h1 style="font-size: 32px; margin-bottom: 8px;">
+        {% if attempt.passed %}Құттықтаймыз!{% else %}Өкінішке орай...{% endif %}
+      </h1>
+      
+      <p style="font-size: 18px; opacity: 0.8;">
+        Сіз «{{ attempt.quiz.title }}» тестін аяқтадыңыз
+      </p>
+
+      <div class="score-display" style="margin: 30px 0;">
+        <div class="score-circle">
+          <span class="score-num">{{ attempt.final_score|default:attempt.block3_score }}/{{ attempt.total_score }}</span>
+          <span class="score-label">жалпы балл</span>
+        </div>
+      </div>
+
+      <div class="status-badge-big">
+        {% if attempt.passed %}
+          ✅ Өтті (Шекті балл: {{ attempt.quiz.passing_score }}%)
+        {% else %}
+          ❌ Өтпеді (Шекті балл: {{ attempt.quiz.passing_score }}%)
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+      <div class="card" style="padding: 20px; display: flex; align-items: center; gap: 15px;">
+        <div style="font-size: 30px;">⏱️</div>
+        <div>
+          <div style="color: #64748b; font-size: 14px;">Аяқталған уақыты</div>
+          <div style="font-weight: 700;">{{ attempt.completed_at|date:"d.m.Y, H:i" }}</div>
+        </div>
+      </div>
+      <div class="card" style="padding: 20px; display: flex; align-items: center; gap: 15px;">
+        <div style="font-size: 30px;">📊</div>
+        <div>
+          <div style="color: #64748b; font-size: 14px;">Тест сұрақтары</div>
+          <div style="font-weight: 700;">{{ submissions.count }} сұрақ жауап берілді</div>
+        </div>
+      </div>
+    </div>
+
+    {% if open_answers %}
+    <h3 style="margin-bottom: 16px;">✍️ Ашық сұрақтар (Блок 2)</h3>
+    <div class="card" style="margin-bottom: 30px; padding: 0;">
+      {% for ans in open_answers %}
+      <div style="padding: 20px; border-bottom: 1px solid #f1f5f9;">
+        <div style="font-weight: 600; margin-bottom: 8px;">{{ forloop.counter }}. {{ ans.question.question_text }}</div>
+        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; font-style: italic; color: #475569;">
+          «{{ ans.answer_text }}»
+        </div>
+        <div style="margin-top: 10px;">
+          {% if ans.score is not none %}
+            <span class="badge" style="background: #e0f2fe; color: #0369a1;">Балл: {{ ans.score }}</span>
+          {% else %}
+            <span class="badge" style="background: #fef3c7; color: #92400e;">⏳ Мұғалімнің тексерісін күтуде...</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <h3 style="margin-bottom: 16px;">🔎 Тест талдауы (Блок 3)</h3>
+    {% for sub in submissions %}
+    <div class="card" style="margin-bottom: 16px; border-left: 4px solid {% if sub.selected_answer.is_correct %}#10b981{% else %}#ef4444{% endif %};">
+      <div style="display: flex; justify-content: space-between;">
+        <div style="font-weight: 600;">{{ forloop.counter }}. {{ sub.question.question_text }}</div>
+        <div style="font-weight: 700; color: {% if sub.selected_answer.is_correct %}#10b981{% else %}#ef4444{% endif %};">
+          {% if sub.selected_answer.is_correct %}+{{ sub.question.points }}{% else %}0{% endif %} балл
+        </div>
+      </div>
+      
+      <div style="margin-top: 12px; font-size: 15px;">
+        <div style="color: #64748b; margin-bottom: 4px;">Сіздің жауабыңыз:</div>
+        <div style="padding: 8px 12px; border-radius: 8px; {% if sub.selected_answer.is_correct %}background: #ecfdf5; color: #065f46;{% else %}background: #fef2f2; color: #991b1b;{% endif %}">
+          {{ sub.selected_answer.answer_text|default:"Жауап берілмеді" }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div style="margin-top: 40px; display: flex; gap: 15px; justify-content: center; padding-bottom: 50px;">
+      <a href="{% url 'student_dashboard' %}" class="btn btn-outline">Басты бетке қайту</a>
+      <a href="javascript:window.print()" class="btn btn-ghost">🖨️ Нәтижені басып шығару</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .result-header-card.passed {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 2px solid #bbf7d0;
+    color: #166534;
+  }
+  .result-header-card.failed {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 2px solid #fecaca;
+    color: #991b1b;
+  }
+  .score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: white;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+  }
+  .score-num {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .score-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-top: 5px;
+  }
+  .status-badge-big {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.5);
+    font-weight: 700;
+    backdrop-filter: blur(5px);
+  }
+  @media print {
+    .btn, .navbar { display: none; }
+    .card { box-shadow: none; border: 1px solid #eee; }
+  }
+</style>
+{% endblock %}

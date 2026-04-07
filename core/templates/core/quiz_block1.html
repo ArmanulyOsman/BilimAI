@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+{% block title %}Теория — {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="quiz-block-wrap">
+
+    <!-- Steps -->
+    <div class="steps">
+      <div class="step active">
+        <div class="step-dot">1</div>
+        <span class="step-label">Теория</span>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <span class="step-label">Ашық сұрақтар</span>
+      </div>
+      <div class="step">
+        <div class="step-dot">3</div>
+        <span class="step-label">Тест</span>
+      </div>
+    </div>
+
+    <!-- Block header -->
+    <div class="block-header">
+      <div class="block-info">
+        <div class="block-label">📖 1-Блок</div>
+        <div class="block-title">{{ quiz.title }}</div>
+      </div>
+      <div class="timer-box" id="timerBox">
+        <div class="timer-label">Қалған уақыт</div>
+        <div class="timer-value" id="timerValue">--:--</div>
+      </div>
+    </div>
+
+    <!-- Theory content -->
+     <div class="theory-content">
+        {{ quiz.theory_content|linebreaks }}
+        
+        {% if quiz.theory_image %}
+            <div class="theory-image-wrap" style="margin-top: 20px; text-align: center;">
+            <img src="{{ quiz.theory_image.url }}" alt="Theory image" 
+                style="max-width: 100%; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Continue button -->
+    <div style="margin-top:24px;display:flex;justify-content:flex-end">
+      <a href="/quiz/{{ quiz.id }}/block1/done/" class="btn btn-primary btn-lg" id="continueBtn">
+        Жалғастыру →
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const totalSeconds = {{ time_seconds }};
+let remaining = totalSeconds;
+const timerEl = document.getElementById('timerValue');
+const timerBox = document.getElementById('timerBox');
+
+function updateTimer() {
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+  if (remaining <= 60) {
+    timerBox.className = 'timer-box danger';
+  } else if (remaining <= 180) {
+    timerBox.className = 'timer-box warning';
+  }
+
+  if (remaining <= 0) {
+    window.location.href = '/quiz/{{ quiz.id }}/block1/done/';
+  }
+  remaining--;
+}
+
+updateTimer();
+const interval = setInterval(updateTimer, 1000);
+</script>
+{% endblock %}

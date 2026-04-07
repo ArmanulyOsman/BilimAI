@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+{% block title %}Дайын! — BilimAI{% endblock %}
+
+{% block content %}
+<div class="container page text-center" style="max-width:600px; padding-top:60px;">
+  <div class="success-icon" style="font-size:80px; margin-bottom:20px;">🎉</div>
+  <h2 class="page-title">Тест сәтті жасалды!</h2>
+  <p class="page-subtitle">Тест оқушыларға қолжетімді. Ссылканы көшіріп алып, оқушыларыңызға жіберіңіз.</p>
+  
+  <div style="background:#fff; padding:20px; border-radius:16px; border:2px dashed #e2e8f0; margin:30px 0;">
+    <input type="text" id="shareUrl" value="{{ share_url }}" readonly class="form-control" style="text-align:center; font-weight:bold; color:#1a73e8; border:none; background:transparent; font-size:18px;">
+    <button onclick="copyLink()" class="btn btn-outline btn-sm" style="margin-top:15px;">🔗 Ссылканы көшіру</button>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary btn-full">Панельге қайту</a>
+  </div>
+</div>
+
+<script>
+function copyLink() {
+  const copyText = document.getElementById("shareUrl");
+  copyText.select();
+  document.execCommand("copy");
+  alert("Ссылка көшірілді!");
+}
+</script>
+{% endblock %}

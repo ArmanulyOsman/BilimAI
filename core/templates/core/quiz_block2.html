@@ -1,0 +1,83 @@
+{% extends 'core/base.html' %}
+{% load custom_filters %}
+
+{% block title %}Ашық сұрақтар — {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="quiz-block-wrap">
+
+    <div class="steps">
+      <div class="step done">
+        <div class="step-dot">✓</div>
+        <span class="step-label">Теория</span>
+      </div>
+      <div class="step active">
+        <div class="step-dot">2</div>
+        <span class="step-label">Ашық сұрақтар</span>
+      </div>
+      <div class="step">
+        <div class="step-dot">3</div>
+        <span class="step-label">Тест</span>
+      </div>
+    </div>
+
+    <div class="block-header">
+      <div class="block-info">
+        <div class="block-label">✍️ 2-Блок</div>
+        <div class="block-title">Ашық сұрақтар</div>
+      </div>
+      <div class="timer-box" id="timerBox">
+        <div class="timer-label">Қалған уақыт</div>
+        <div class="timer-value" id="timerValue">--:--</div>
+      </div>
+    </div>
+
+    <form method="post" id="block2Form">
+      {% csrf_token %}
+      {% for question in questions %}
+      <div class="question-block">
+        <div class="question-num">Сұрақ {{ forloop.counter }}</div>
+        <div class="question-text">{{ question.question_text }}</div>
+        <textarea
+          name="q_{{ question.id }}"
+          class="form-control"
+          rows="4"
+          placeholder="Жауабыңызды осында жазыңыз..."
+        >{% if existing %}{{ existing|get_item:question.id|attr:'answer_text' }}{% endif %}</textarea>
+      </div>
+      {% empty %}
+      <div class="alert alert-info">Бұл блокта сұрақтар жоқ</div>
+      {% endfor %}
+
+      <div style="margin-top:24px;display:flex;justify-content:flex-end">
+        <button type="submit" class="btn btn-primary btn-lg">
+          Жалғастыру →
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const totalSeconds = {{ time_seconds }};
+let remaining = totalSeconds;
+const timerEl = document.getElementById('timerValue');
+const timerBox = document.getElementById('timerBox');
+
+function updateTimer() {
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if (remaining <= 60) timerBox.className = 'timer-box danger';
+  else if (remaining <= 180) timerBox.className = 'timer-box warning';
+  if (remaining <= 0) document.getElementById('block2Form').submit();
+  remaining--;
+}
+updateTimer();
+setInterval(updateTimer, 1000);
+</script>
+{% endblock %}

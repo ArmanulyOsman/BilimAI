@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тіркелу — BilimAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card" style="max-width:520px">
+    <div class="auth-header">
+      <div class="auth-logo">🎓</div>
+      <div class="auth-title">Тіркелу</div>
+      <div class="auth-subtitle">Рөліңізді таңдаңыз</div>
+    </div>
+    <div class="auth-body">
+      <div class="role-cards">
+        <a href="/register/student/" class="role-card">
+          <div class="role-emoji">🎒</div>
+          <div class="role-title">Оқушы</div>
+          <div class="role-desc">Тесттерді тапсыру және үлгерімді бақылау</div>
+        </a>
+        <a href="/register/teacher/" class="role-card">
+          <div class="role-emoji">👩‍🏫</div>
+          <div class="role-title">Мұғалім</div>
+          <div class="role-desc">Тесттер жасау және оқушыларды бағалау</div>
+        </a>
+      </div>
+      <div class="auth-footer">
+        Тіркелген бе? <a href="/login/">Кіру</a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

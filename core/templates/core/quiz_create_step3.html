@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% block title %}3-қадам: Ашық сұрақтар — BilimAI{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div class="steps-container">
+    <div class="step active"><div class="step-number">✓</div></div>
+    <div class="step active"><div class="step-number">✓</div></div>
+    <div class="step active"><div class="step-number">3</div><div class="step-label">1-блок (Ашық)</div></div>
+    <div class="step"><div class="step-number">4</div><div class="step-label">2-блок</div></div>
+    <div class="step"><div class="step-number">5</div><div class="step-label">Аяқтау</div></div>
+  </div>
+
+  <div class="grid-2-1" style="display:grid; grid-template-columns: 1fr 350px; gap:24px;">
+    <div class="card">
+      <h3>Қосылған сұрақтар ({{ questions.count }})</h3>
+      <div class="question-list" style="margin-top:20px;">
+        {% for q in questions %}
+        <div class="q-item" style="padding:12px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
+          <span>{{ forloop.counter }}. {{ q.question_text }}</span>
+          <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_question">
+            <input type="hidden" name="question_id" value="{{ q.id }}">
+            <button type="submit" class="btn-text" style="color:red;">Өшіру</button>
+          </form>
+        </div>
+        {% empty %}
+        <p class="text-muted">Әзірге сұрақтар жоқ.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_question">
+        <label class="form-label">Жаңа ашық сұрақ</label>
+        <textarea name="question_text" class="form-control" placeholder="Сұрақты жазыңыз..." required></textarea>
+        <button type="submit" class="btn btn-outline btn-full" style="margin-top:12px;">+ Қосу</button>
+      </form>
+      
+      <hr style="margin:20px 0;">
+      
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="next">
+        <div class="form-group">
+          <label class="form-label">Бұл блокқа уақыт (мин)</label>
+          <input type="number" name="block2_time_minutes" class="form-control" value="15">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Келесі қадам →</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

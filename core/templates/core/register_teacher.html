@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мұғалім тіркелуі — BilimAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+<body>
+<div class="auth-wrap" style="padding: 40px 24px;">
+  <div class="auth-card" style="max-width:520px">
+    <div class="auth-header">
+      <div class="auth-logo">👩‍🏫</div>
+      <div class="auth-title">Мұғалім тіркелуі</div>
+      <div class="auth-subtitle">Пәндеріңізді таңдаңыз</div>
+    </div>
+    <div class="auth-body">
+      <form method="post" id="teacherForm">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Пайдаланушы аты</label>
+          <input type="text" name="username" class="form-control" placeholder="Логин..." value="{{ form.username.value|default:'' }}">
+          {% if form.username.errors %}<div class="form-error">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">Тегі</label>
+            <input type="text" name="last_name" class="form-control" placeholder="Тегі..." value="{{ form.last_name.value|default:'' }}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Аты</label>
+            <input type="text" name="first_name" class="form-control" placeholder="Аты..." value="{{ form.first_name.value|default:'' }}">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Әкесінің аты</label>
+          <input type="text" name="patronymic" class="form-control" placeholder="Әкесінің аты..." value="{{ form.patronymic.value|default:'' }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="email@example.com" value="{{ form.email.value|default:'' }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Құпиясөз</label>
+          <input type="password" name="password1" class="form-control" placeholder="••••••••">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Құпиясөзді растаңыз</label>
+          <input type="password" name="password2" class="form-control" placeholder="••••••••">
+        </div>
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+
+        <div class="form-group">
+          <label class="form-label">Оқытатын пәндер</label>
+          {% if subjects %}
+            <div class="checkbox-list" style="max-height:200px;overflow-y:auto">
+              {% for subject in subjects %}
+              <label class="checkbox-item">
+                <input type="checkbox" name="subjects" value="{{ subject.id }}">
+                <span>{{ subject.icon }} {{ subject.name }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted text-small">Әзір пәндер жоқ. Жаңа пән қосыңыз.</p>
+          {% endif %}
+        </div>
+
+        <!-- Add new subject -->
+        <div class="form-group" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px">
+          <label class="form-label">➕ Жаңа пән қосу</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="text" id="newSubjectInput" class="form-control" placeholder="Пән атауы..." style="flex:1">
+            <select id="newSubjectIcon" class="form-control" style="width:70px">
+              <option>📚</option><option>➕</option><option>🔢</option><option>⚗️</option>
+              <option>🌍</option><option>🖊️</option><option>🎨</option><option>🎵</option>
+              <option>💻</option><option>🏃</option><option>🧬</option><option>📐</option>
+            </select>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addSubject()">Қосу</button>
+          </div>
+          <input type="hidden" name="new_subject" id="newSubjectHidden">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">✅ Тіркелу</button>
+      </form>
+      <div class="auth-footer" style="margin-top:20px">
+        <a href="/register/">← Артқа</a> &nbsp;·&nbsp; <a href="/login/">Кіру</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function addSubject() {
+  const input = document.getElementById('newSubjectInput');
+  const iconSelect = document.getElementById('newSubjectIcon');
+  const name = input.value.trim();
+  const icon = iconSelect.value;
+  
+  if (!name) {
+    input.focus();
+    return;
+  }
+
+  let list = document.querySelector('.checkbox-list');
+  if (!list) {
+    const parent = input.closest('.form-group').previousElementSibling; 
+    list = document.createElement('div');
+    list.className = 'checkbox-list';
+    list.style.maxHeight = '200px';
+    list.style.overflowY = 'auto';
+    parent.innerHTML = '<label class="form-label">Оқытатын пәндер</label>';
+    parent.appendChild(list);
+  }
+
+  const label = document.createElement('label');
+  label.className = 'checkbox-item';
+  label.style.background = '#EFF6FF';
+  label.style.borderColor = '#2563EB';
+  
+  label.innerHTML = `
+    <input type="checkbox" name="new_subjects[]" value="${icon} ${name}" checked>
+    <span>${icon} ${name} <span style="font-size:11px;color:#2563EB">(жаңа)</span></span>
+  `;
+  
+  list.appendChild(label);
+
+  input.value = '';
+  input.focus();
+}
+
+function createCheckboxList() {
+  const div = document.createElement('div');
+  div.className = 'checkbox-list';
+  document.querySelector('.form-group:has(label[for])').appendChild(div);
+  return div;
+}
+</script>
+</body>
+</html>

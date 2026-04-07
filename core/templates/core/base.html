@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BilimAI{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-logo">🎓</div>
+    <span class="nav-brand-text">BilimAI</span>
+  </a>
+  <div class="nav-actions">
+    <div class="nav-user">
+      <div class="nav-avatar">{{ user.first_name.0 }}{{ user.last_name.0 }}</div>
+      <span>{{ user.full_name }}</span>
+      {% if user.is_teacher %}
+        <span class="badge badge-primary" style="margin-left:4px">Мұғалім</span>
+      {% endif %}
+    </div>
+    <a href="/logout/" class="btn btn-ghost btn-sm">Шығу</a>
+  </div>
+</nav>
+{% endif %}
+
+{% if messages %}
+<div class="container" style="padding-top:12px">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }}">
+      {{ message }}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
