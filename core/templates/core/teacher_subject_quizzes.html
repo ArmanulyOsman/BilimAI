@@ -1,77 +1,62 @@
 {% extends 'core/base.html' %}
-{% block title %}{{ subject.name }} — Тесттер{% endblock %}
+{% block title %}{{ subject.name }} — BilimAI{% endblock %}
 
 {% block content %}
 <div class="container page">
-  <div class="page-header">
-    <a href="{% url 'teacher_dashboard' %}" class="btn-link">← Артқа</a>
-    <h2 class="page-title">{{ subject.icon }} {{ subject.name }}</h2>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-      <p class="page-subtitle">Осы пән бойынша жасалған тесттер</p>
-      <a href="{% url 'quiz_create_step1' subject.id %}" class="btn btn-primary">+ Жаңа тест жасау</a>
+
+  <a href="/teacher/" class="back-link">← Кабинетке</a>
+
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div>
+      <div class="page-title">{{ subject.icon }} {{ subject.name }}</div>
+      <div class="page-subtitle">Тесттер тізімі</div>
     </div>
+    <a href="/teacher/subject/{{ subject.id }}/create/" class="btn btn-primary">
+      ➕ Тест қосу
+    </a>
   </div>
 
-  <div class="card" style="margin-top:24px; padding:0;">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Тест атауы</th>
-          <th>Өту балы</th>
-          <th>Тапсырғандар</th>
-          <th>Әрекет</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for quiz in quizzes %}
-        <tr>
-          <td><strong>{{ quiz.title }}</strong></td>
-          <td>{{ quiz.passing_score }}%</td>
-          <td><span class="badge">{{ quiz.attempts.count }} оқушы</span></td>
-          <td>
-            <a href="{% url 'teacher_quiz_detail' quiz.id %}" class="btn btn-outline btn-sm">Нәтижелерді көру</a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="4" style="text-align:center; padding:40px; color:#64748b;">Бұл пән бойынша әлі тест жасалмаған.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  {% if quizzes %}
+    <div style="display:flex;flex-direction:column;gap:12px">
+      {% for quiz in quizzes %}
+      <div class="quiz-card">
+        <div class="quiz-info">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <span class="quiz-title">{{ quiz.title }}</span>
+            {% if quiz.copied_from %}
+              <span class="badge badge-muted" title="{{ quiz.copied_from.teacher.full_name }} тестінен көшірілген">🔄 Көшірме</span>
+            {% endif %}
+          </div>
+          <div class="quiz-meta" style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-muted">📖 {{ quiz.theory_time_minutes }} мин</span>
+            <span class="badge badge-muted">✍️ {{ quiz.open_questions.count }} сұрақ</span>
+            <span class="badge badge-muted">📝 {{ quiz.test_questions.count }} тест</span>
+            <span class="badge badge-muted">👥 {{ quiz.attempts.count }} оқушы</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;align-items:center">
+          <a href="/teacher/quiz/{{ quiz.id }}/rename/?next=/teacher/subject/{{ subject.id }}/"
+             class="btn btn-ghost btn-sm" title="Атауын өзгерту">
+            ✏️ Атауы
+          </a>
+          <a href="/teacher/quiz/{{ quiz.id }}/" class="btn btn-outline btn-sm">
+            👁 Нәтижелер
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📝</div>
+      <div class="empty-title">Тесттер жоқ</div>
+      <div class="empty-desc">Жаңа тест жасаңыз немесе маркетплейстен көшіріңіз</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <a href="/teacher/subject/{{ subject.id }}/create/" class="btn btn-primary">➕ Тест жасау</a>
+        <a href="/marketplace/" class="btn btn-outline">🛍️ Маркетплейс</a>
+      </div>
+    </div>
+  {% endif %}
+
 </div>
-
-<style>
-    .btn-link {
-    text-decoration: none;
-    color: #64748b;
-    font-size: 14px;
-    display: inline-block;
-    margin-bottom: 10px;
-}
-.btn-link:hover { color: #1a73e8; }
-
-.badge {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.table tr:hover {
-    background-color: #fcfdfe;
-}
-
-.page-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #1e293b;
-}
-
-.page-subtitle {
-    color: #64748b;
-    font-size: 16px;
-}
-</style>
 {% endblock %}

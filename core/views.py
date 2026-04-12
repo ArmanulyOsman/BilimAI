@@ -291,6 +291,21 @@ def teacher_grade_attempt(request, attempt_id):
 # ─── QUIZ CREATION ───────────────────────────────────────────────────────────
 
 @login_required
+def quiz_rename(request, quiz_id):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+    quiz = get_object_or_404(Quiz, id=quiz_id, teacher=request.user)
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        if title:
+            quiz.title = title
+            quiz.save()
+        next_url = request.POST.get('next', '')
+        return redirect(next_url) if next_url else redirect('quiz_create_step2', quiz_id=quiz.id)
+    return render(request, 'core/quiz_rename.html', {'quiz': quiz})
+ 
+ 
+@login_required
 def quiz_create_step1(request, subject_id):
     if not request.user.is_teacher:
         return redirect('student_dashboard')
@@ -398,3 +413,81 @@ def add_subject(request):
             request.user.subjects.add(subj)
             return JsonResponse({'success': True, 'id': subj.id, 'name': subj.name})
     return JsonResponse({'success': False})
+
+# ─── MARKETPLACE ──────────────────────────────────────────────────────────────
+
+@login_required
+def marketplace(request):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+ 
+    subject_id = request.GET.get('subject')
+    search = request.GET.get('q', '').strip()
+ 
+    quizzes = Quiz.objects.exclude(teacher=request.user).filter(is_active=True)\
+        .select_related('teacher', 'subject')
+ 
+    if subject_id:
+        quizzes = quizzes.filter(subject_id=subject_id)
+    if search:
+        quizzes = quizzes.filter(title__icontains=search)
+ 
+    # Mark which ones the teacher already copied
+    my_copies = set(
+        Quiz.objects.filter(teacher=request.user, copied_from__isnull=False)
+        .values_list('copied_from_id', flat=True)
+    )
+ 
+    subjects = Subject.objects.all()
+    return render(request, 'core/marketplace.html', {
+        'quizzes': quizzes,
+        'subjects': subjects,
+        'my_copies': my_copies,
+        'selected_subject': subject_id,
+        'search': search,
+    })
+ 
+ 
+@login_required
+def marketplace_copy(request, quiz_id):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+ 
+    original = get_object_or_404(Quiz, id=quiz_id, is_active=True)
+ 
+    # Deep copy the quiz
+    copy = Quiz.objects.create(
+        title=f"{original.title} (көшірме)",
+        subject=original.subject,
+        teacher=request.user,
+        passing_score=original.passing_score,
+        theory_content=original.theory_content,
+        theory_time_minutes=original.theory_time_minutes,
+        block2_time_minutes=original.block2_time_minutes,
+        block3_time_minutes=original.block3_time_minutes,
+        copied_from=original,
+    )
+ 
+    # Copy open questions
+    for oq in original.open_questions.all():
+        OpenQuestion.objects.create(quiz=copy, question_text=oq.question_text, order=oq.order)
+ 
+    # Copy test questions + answers
+    for tq in original.test_questions.prefetch_related('answers').all():
+        new_tq = TestQuestion.objects.create(
+            quiz=copy, question_text=tq.question_text,
+            order=tq.order, points=tq.points
+        )
+        for ans in tq.answers.all():
+            TestAnswer.objects.create(
+                question=new_tq,
+                answer_text=ans.answer_text,
+                is_correct=ans.is_correct
+            )
+ 
+    # Add subject to teacher's list if not already
+    request.user.subjects.add(original.subject)
+ 
+    messages.success(request, f'«{original.title}» тесті сәтті көшірілді! Енді оны өңдей аласыз.')
+    return redirect('quiz_create_step2', quiz_id=copy.id)
+ 

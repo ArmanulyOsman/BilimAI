@@ -53,6 +53,12 @@ class Quiz(models.Model):
     passing_score = models.IntegerField(default=60, verbose_name='Өту балы (%)')
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    copied_from = models.ForeignKey(
+        'self', null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='copies',
+        verbose_name='Көшірілген тесттен'
+    )
 
     # Block 1: Theory
     theory_content = models.TextField(blank=True, verbose_name='Теория мазмұны')

@@ -23,6 +23,7 @@ urlpatterns = [
     path('teacher/', views.teacher_dashboard, name='teacher_dashboard'),
     path('teacher/subject/<int:subject_id>/manage/', views.teacher_subject_quizzes, name='teacher_subject_quizzes'),
     path('teacher/quiz/<int:quiz_id>/', views.teacher_quiz_detail, name='teacher_quiz_detail'),
+    path('teacher/quiz/<int:quiz_id>/rename/', views.quiz_rename, name='quiz_rename'),
     path('teacher/grade/<int:attempt_id>/', views.teacher_grade_attempt, name='teacher_grade_attempt'),
 
     # Quiz creation
@@ -34,4 +35,7 @@ urlpatterns = [
 
     # API
     path('api/add-subject/', views.add_subject, name='add_subject'),
+
+    path('marketplace/', views.marketplace, name='marketplace'),
+    path('marketplace/copy/<int:quiz_id>/', views.marketplace_copy, name='marketplace_copy'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

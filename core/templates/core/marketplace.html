@@ -1,0 +1,114 @@
+{% extends 'core/base.html' %}
+{% block title %}Маркетплейс — BilimAI{% endblock %}
+
+{% block content %}
+<div class="container page">
+
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div>
+      <div class="page-title">🛍️ Маркетплейс</div>
+      <div class="page-subtitle">Басқа мұғалімдердің тесттерін көшіріп, өңдеп, оқушыларыңызға жіберіңіз</div>
+    </div>
+    <a href="/teacher/" class="btn btn-ghost">← Кабинетке</a>
+  </div>
+
+  <!-- Filters -->
+  <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+    <input
+      type="text"
+      name="q"
+      class="form-control"
+      placeholder="🔍 Тест атауы бойынша іздеу..."
+      value="{{ search }}"
+      style="flex:1;min-width:200px"
+    >
+    <select name="subject" class="form-control" style="min-width:180px">
+      <option value="">Барлық пәндер</option>
+      {% for subj in subjects %}
+        <option value="{{ subj.id }}" {% if selected_subject == subj.id|stringformat:"s" %}selected{% endif %}>
+          {{ subj.icon }} {{ subj.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Іздеу</button>
+    {% if search or selected_subject %}
+      <a href="/marketplace/" class="btn btn-ghost">Тазарту</a>
+    {% endif %}
+  </form>
+
+  <!-- Results -->
+  {% if quizzes %}
+    <div style="display:flex;flex-direction:column;gap:12px">
+      {% for quiz in quizzes %}
+      <div class="card">
+        <div class="card-body" style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
+
+          <!-- Left: info -->
+          <div style="flex:1;min-width:260px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
+              <span class="badge badge-primary">{{ quiz.subject.icon }} {{ quiz.subject.name }}</span>
+              {% if quiz.id in my_copies %}
+                <span class="badge badge-success">✅ Көшірілген</span>
+              {% endif %}
+              {% if quiz.copied_from %}
+                <span class="badge badge-muted">🔄 Өзгертілген</span>
+              {% endif %}
+            </div>
+
+            <div style="font-size:17px;font-weight:700;margin-bottom:4px">{{ quiz.title }}</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px">
+              👤 {{ quiz.teacher.full_name }}
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span class="badge badge-muted">📖 {{ quiz.theory_time_minutes }} мин теория</span>
+              <span class="badge badge-muted">✍️ {{ quiz.open_questions.count }} ашық сұрақ</span>
+              <span class="badge badge-muted">📝 {{ quiz.test_questions.count }} тест сұрағы</span>
+              <span class="badge badge-muted">🎯 Өту балы: {{ quiz.passing_score }}%</span>
+            </div>
+
+            {% if quiz.theory_content %}
+              <div style="margin-top:12px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);font-size:13px;color:var(--text-muted);line-height:1.6;max-height:80px;overflow:hidden;position:relative">
+                {{ quiz.theory_content|truncatechars:180 }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Right: actions -->
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0">
+            {% if quiz.id in my_copies %}
+              <span style="font-size:13px;color:var(--text-muted);text-align:right">Бұл тест<br>сізде бар</span>
+            {% endif %}
+            <form method="post" action="/marketplace/copy/{{ quiz.id }}/" style="margin:0">
+              {% csrf_token %}
+              <button type="submit" class="btn {% if quiz.id in my_copies %}btn-ghost{% else %}btn-primary{% endif %}">
+                {% if quiz.id in my_copies %}
+                  🔄 Қайта көшіру
+                {% else %}
+                  📋 Көшіру және өңдеу
+                {% endif %}
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">Тесттер табылмады</div>
+      <div class="empty-desc">
+        {% if search or selected_subject %}
+          Іздеу шарттарын өзгертіп көріңіз
+        {% else %}
+          Басқа мұғалімдер тесттер қосқанда олар осында пайда болады
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

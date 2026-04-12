@@ -21,11 +21,13 @@
       <div class="card-arrow">→</div>
     </a>
     {% empty %}
-    <div class="empty-state" style="grid-column: 1 / -1;">
-      <div class="empty-icon">📂</div>
-      <p>Сізге әлі пәндер бекітілмеген.</p>
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">Пәндер жоқ</div>
+      <div class="empty-desc">Тіркелу кезінде пәндер таңдалмаған немесе маркетплейстен тест көшіріп алыңыз</div>
     </div>
     {% endfor %}
+      <a href="/marketplace/" class="btn btn-primary">🛍️ Маркетплейске өту</a>
   </div>
 </div>
 
