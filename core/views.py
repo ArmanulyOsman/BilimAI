@@ -300,10 +300,9 @@ def quiz_rename(request, quiz_id):
         if title:
             quiz.title = title
             quiz.save()
-        next_url = request.POST.get('next', '')
-        return redirect(next_url) if next_url else redirect('quiz_create_step2', quiz_id=quiz.id)
+        return redirect('teacher_quiz_detail', quiz_id=quiz_id)
     return render(request, 'core/quiz_rename.html', {'quiz': quiz})
- 
+
  
 @login_required
 def quiz_create_step1(request, subject_id):
