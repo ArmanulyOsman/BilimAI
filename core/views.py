@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
+from django.db.models import Avg
 from django.views.decorators.http import require_POST
 import json
 
@@ -252,12 +253,19 @@ def teacher_subject_quizzes(request, subject_id):
 def teacher_quiz_detail(request, quiz_id):
     if not request.user.is_teacher:
         return redirect('student_dashboard')
+        
     quiz = get_object_or_404(Quiz, id=quiz_id, teacher=request.user)
     attempts = QuizAttempt.objects.filter(
         quiz=quiz, status=QuizAttempt.STATUS_COMPLETED
     ).select_related('student')
+
+    # Орташа баллды есептеу (Блок 3 бойынша)
+    avg_score = attempts.aggregate(Avg('block3_score'))['block3_score__avg'] or 0
+
     return render(request, 'core/teacher_quiz_detail.html', {
-        'quiz': quiz, 'attempts': attempts,
+        'quiz': quiz, 
+        'attempts': attempts,
+        'avg_score': round(avg_score, 1) # Бір ондық таңбаға дейін дөңгелектеу
     })
 
 
