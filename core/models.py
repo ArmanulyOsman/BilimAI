@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
-
+from cloudinary.models import CloudinaryField
 
 class Subject(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name='Пән атауы')
@@ -64,6 +64,7 @@ class Quiz(models.Model):
     theory_content = models.TextField(blank=True, verbose_name='Теория мазмұны')
     theory_time_minutes = models.IntegerField(default=10, verbose_name='Теорияға уақыт (мин)')
     theory_image = models.ImageField(upload_to='theory_images/', null=True, blank=True, verbose_name='Теория суреті')
+    theory_image = CloudinaryField('theory_image')
 
     # Block 2: Text answers
     block2_time_minutes = models.IntegerField(default=15, verbose_name='2-блокқа уақыт (мин)')
