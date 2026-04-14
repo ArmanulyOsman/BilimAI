@@ -24,6 +24,7 @@
         <tr>
           <th>Оқушының аты-жөні</th>
           <th>Тапсырған уақыты</th>
+          <th>Ашық сұрақ балы (Блок 2)</th>
           <th>Тест балы (Блок 3)</th>
           <th>Статус</th>
           <th>Әрекет</th>
@@ -34,6 +35,7 @@
         <tr>
           <td>{{ attempt.student.full_name }}</td>
           <td>{{ attempt.completed_at|date:"d.m.Y, H:i" }}</td>
+          <td><strong>{{ attempt.block2_score }}</strong></td>
           <td><strong>{{ attempt.block3_score }}</strong></td>
           <td>
             {% if attempt.block2_graded %}
