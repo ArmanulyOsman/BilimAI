@@ -150,9 +150,10 @@ class QuizAttempt(models.Model):
 
     @property
     def total_score(self):
-        b2 = self.block2_score or 0
+        # b2 = self.block2_score or 0
         b3 = self.block3_score or 0
-        return b2 + b3
+        # return b2 + b3 open queestion score added
+        return b3
 
     @property
     def passed(self):

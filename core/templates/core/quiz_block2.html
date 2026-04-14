@@ -50,7 +50,12 @@
       <div class="alert alert-info">Бұл блокта сұрақтар жоқ</div>
       {% endfor %}
 
-      <div style="margin-top:24px;display:flex;justify-content:flex-end">
+      <div style="margin-top:24px;display:flex;justify-content:space-between;align-items:center">
+        <a href="/quiz/{{ quiz.id }}/block/1/"
+          onclick="return confirm('Теорияға оралсаңыз жауаптарыңыз сақталмайды. Жалғастыру керек пе?')"
+          class="btn btn-ghost">
+          ← Теорияға оралу
+        </a>
         <button type="submit" class="btn btn-primary btn-lg">
           Жалғастыру →
         </button>
