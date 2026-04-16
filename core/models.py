@@ -64,8 +64,8 @@ class Quiz(models.Model):
     # Block 1: Theory
     theory_content = models.TextField(blank=True, verbose_name='Теория мазмұны')
     theory_time_minutes = models.IntegerField(default=10, verbose_name='Теорияға уақыт (мин)')
-    theory_image = models.ImageField(upload_to='theory_images/', null=True, blank=True, verbose_name='Теория суреті')
-    theory_image = CloudinaryField('theory_image')
+    # theory_image = models.ImageField(upload_to='theory_images/', null=True, blank=True, verbose_name='Теория суреті')
+    theory_image = CloudinaryField('theory_image', null=True)
 
     # Block 2: Text answers
     block2_time_minutes = models.IntegerField(default=15, verbose_name='2-блокқа уақыт (мин)')
