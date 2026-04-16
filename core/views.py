@@ -235,8 +235,27 @@ def teacher_dashboard(request):
     if not request.user.is_teacher:
         return redirect('student_dashboard')
     subjects = request.user.subjects.prefetch_related('quizzes').all()
-    return render(request, 'core/teacher_dashboard.html', {'subjects': subjects})
+    all_subjects = Subject.objects.exclude(teachers=request.user)
+    return render(request, 'core/teacher_dashboard.html', {
+        'subjects': subjects,
+        'all_subjects': all_subjects,
+    })
 
+@login_required
+def teacher_add_subject(request):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+    if request.method == 'POST':
+        subject_id = request.POST.get('subject_id')
+        new_name = request.POST.get('new_name', '').strip()
+        if subject_id:
+            subj = get_object_or_404(Subject, id=subject_id)
+            request.user.subjects.add(subj)
+        elif new_name:
+            icon = request.POST.get('icon', '📚')
+            subj, _ = Subject.objects.get_or_create(name=new_name, defaults={'icon': icon})
+            request.user.subjects.add(subj)
+    return redirect('teacher_dashboard')
 
 @login_required
 def teacher_subject_quizzes(request, subject_id):

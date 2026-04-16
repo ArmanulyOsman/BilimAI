@@ -3,12 +3,75 @@
 
 {% block content %}
 <div class="container page">
-  <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
-    <div>
-      <h2 class="page-title">👋 Қайырлы күн, {{ user.first_name }}!</h2>
-      <p class="page-subtitle">Сіздің бақылауыңыздағы пәндер тізімі</p>
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+  <div>
+    <div class="page-title">👩‍🏫 Менің кабинетім</div>
+    <div class="page-subtitle">{{ user.full_name }} — сіздің пәндеріңіз бен тесттеріңіз</div>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button onclick="document.getElementById('addSubjectModal').style.display='flex'"
+            class="btn btn-outline">
+      ➕ Пән қосу
+    </button>
+    <a href="/marketplace/" class="btn btn-outline">🛍️ Маркетплейс</a>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="addSubjectModal"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center;padding:24px"
+     onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:var(--card);border-radius:var(--radius-lg);width:100%;max-width:460px;overflow:hidden;box-shadow:var(--shadow-lg)">
+
+    <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:17px;font-weight:700">➕ Пән қосу</span>
+      <button onclick="document.getElementById('addSubjectModal').style.display='none'"
+              style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted)">✕</button>
+    </div>
+
+    <div style="padding:24px">
+
+      <!-- Existing subjects -->
+      {% with available_subjects=all_subjects %}
+      {% if available_subjects %}
+      <form method="post" action="/teacher/add-subject/">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Бар пәндерден таңдау</label>
+          <select name="subject_id" class="form-control">
+            <option value="">— Пән таңдаңыз —</option>
+            {% for s in available_subjects %}
+              <option value="{{ s.id }}">{{ s.icon }} {{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Қосу</button>
+      </form>
+      {% endif %}
+      {% endwith %}
+
+      <div class="divider-text">немесе жаңа пән</div>
+
+      <!-- New subject -->
+      <form method="post" action="/teacher/add-subject/">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Жаңа пән атауы</label>
+          <div style="display:flex;gap:8px">
+            <select name="icon" class="form-control" style="width:70px">
+              <option>📚</option><option>🔢</option><option>⚗️</option><option>🌍</option>
+              <option>🖊️</option><option>🎨</option><option>🎵</option><option>💻</option>
+              <option>🏃</option><option>🧬</option><option>📐</option><option>🔭</option>
+            </select>
+            <input type="text" name="new_name" class="form-control" placeholder="Пән атауы..." required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-accent btn-full">✅ Жасау және қосу</button>
+      </form>
+
     </div>
   </div>
+</div>
 
   <div class="grid-3" style="margin-top:24px;">
     {% for subject in subjects %}

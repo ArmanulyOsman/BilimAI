@@ -32,6 +32,7 @@ urlpatterns = [
     path('teacher/quiz/<int:quiz_id>/create/step3/', views.quiz_create_step3, name='quiz_create_step3'),
     path('teacher/quiz/<int:quiz_id>/create/step4/', views.quiz_create_step4, name='quiz_create_step4'),
     path('teacher/quiz/<int:quiz_id>/create/step5/', views.quiz_create_step5, name='quiz_create_step5'),
+    path('teacher/add-subject/', views.teacher_add_subject, name='teacher_add_subject'),
 
     # API
     path('api/add-subject/', views.add_subject, name='add_subject'),
