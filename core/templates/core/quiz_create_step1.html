@@ -1,148 +1,73 @@
 {% extends 'core/base.html' %}
-
-{% block title %}Жаңа тест жасау — QAZ-intellect{% endblock %}
+{% block title %}Жаңа тест — BilimAI{% endblock %}
 
 {% block content %}
 <div class="container page">
-  <div class="steps-container">
-    <div class="step active">
-      <div class="step-number">1</div>
-      <div class="step-label">Негізгі ақпарат</div>
-    </div>
-    <div class="step">
-      <div class="step-number">2</div>
-      <div class="step-label">Теория</div>
-    </div>
-    <div class="step">
-      <div class="step-number">3</div>
-      <div class="step-label">1-блок</div>
-    </div>
-    <div class="step">
-      <div class="step-number">4</div>
-      <div class="step-label">2-блок</div>
-    </div>
-    <div class="step">
-      <div class="step-number">5</div>
-      <div class="step-label">3-блок</div>
-    </div>
-  </div>
+  <div style="max-width:560px;margin:0 auto">
 
-  <div class="auth-card" style="max-width: 600px; margin: 0 auto;">
-    <div class="auth-header">
-      <div class="auth-logo">📝</div>
-      <h2 class="auth-title">Жаңа тест бастау</h2>
-      <p class="auth-subtitle">Пән: <strong>{{ subject.icon }} {{ subject.name }}</strong></p>
+    <a href="/teacher/subject/{{ subject.id }}/" class="back-link">← Артқа</a>
+
+    <div class="steps" style="margin-bottom:24px">
+      <div class="step active">
+        <div class="step-dot">1</div>
+        <span class="step-label">Негізгі</span>
+      </div>
+      <div class="step"><div class="step-dot">2</div><span class="step-label">Теория</span></div>
+      <div class="step"><div class="step-dot">3</div><span class="step-label">Ашық сұрақтар</span></div>
+      <div class="step"><div class="step-dot">4</div><span class="step-label">Тест</span></div>
+      <div class="step"><div class="step-dot">5</div><span class="step-label">Бөлісу</span></div>
     </div>
 
-    <div class="auth-body">
-      <form method="post">
-        {% csrf_token %}
-        
-        <div class="form-group">
-          <label class="form-label">{{ form.title.label }}</label>
-          {{ form.title.errors }}
-          <input type="text" name="title" class="form-control" 
-                 placeholder="{{ form.title.field.widget.attrs.placeholder }}"
-                 value="{{ form.title.value|default:'' }}" required>
-        </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📝 Тест туралы негізгі мәліметтер</span>
+        <span class="badge badge-primary">{{ subject.icon }} {{ subject.name }}</span>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
 
-        <div class="form-group">
-          <label class="form-label">{{ form.passing_score.label }}</label>
-          {{ form.passing_score.errors }}
-          <div style="position: relative;">
-            <input type="number" name="passing_score" class="form-control" 
-                   value="{{ form.passing_score.value|default:50 }}" min="0" max="100" required>
-            <span style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #64748b;">%</span>
+          <div class="form-group">
+            <label class="form-label">Тест атауы</label>
+            <input type="text" name="title" class="form-control"
+                   placeholder="Тест атауын енгізіңіз..."
+                   value="{{ form.title.value|default:'' }}" required>
+            {% if form.title.errors %}
+              <div class="form-error">{{ form.title.errors.0 }}</div>
+            {% endif %}
           </div>
-          <small class="form-help">Оқушы тесттен өтуі үшін жинауы тиіс ең төменгі ұпай.</small>
-        </div>
 
-        <div class="form-actions" style="margin-top: 32px; display: flex; gap: 12px;">
-          <a href="{% url 'teacher_dashboard' %}" class="btn btn-ghost" style="flex: 1;">Бас тарту</a>
-          <button type="submit" class="btn btn-primary" style="flex: 2;">Келесі қадам →</button>
-        </div>
-      </form>
+          <div class="form-group">
+            <label class="form-label">Өту балы (%)</label>
+            <input type="number" name="passing_score" class="form-control"
+                   min="1" max="100"
+                   value="{{ form.passing_score.value|default:'60' }}">
+            {% if form.passing_score.errors %}
+              <div class="form-error">{{ form.passing_score.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Marketplace checkbox -->
+          <div class="form-group">
+            <label class="checkbox-item" style="cursor:pointer">
+              <input type="checkbox" name="is_marketplace" value="1"
+                     style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0">
+              <div>
+                <div style="font-weight:600;font-size:14px">🛍️ Маркетплейсте жариялау</div>
+                <div style="font-size:13px;color:var(--text-muted);margin-top:2px">
+                  Басқа мұғалімдер бұл тестті көріп, өздеріне көшіре алады
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px">
+            Жалғастыру →
+          </button>
+        </form>
+      </div>
     </div>
+
   </div>
 </div>
-
-<style>
-  /* Step Indicator Styles */
-  .steps-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 40px;
-    position: relative;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .steps-container::before {
-    content: '';
-    position: absolute;
-    top: 20px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #e2e8f0;
-    z-index: 1;
-  }
-
-  .step {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 20%;
-  }
-
-  .step-number {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: #64748b;
-    margin-bottom: 8px;
-    transition: all 0.3s ease;
-  }
-
-  .step.active .step-number {
-    background: #1a73e8;
-    border-color: #1a73e8;
-    color: #fff;
-    box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.2);
-  }
-
-  .step.active .step-label {
-    color: #1a73e8;
-    font-weight: 700;
-  }
-
-  .step-label {
-    font-size: 12px;
-    color: #64748b;
-    text-align: center;
-    font-weight: 500;
-  }
-
-  .form-help {
-    display: block;
-    margin-top: 6px;
-    font-size: 13px;
-    color: #94a3b8;
-  }
-
-  @media (max-width: 600px) {
-    .step-label {
-      display: none;
-    }
-  }
-</style>
 {% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ quiz.title }} — Баптаулар{% endblock %}
+
+{% block content %}
+<div class="container page">
+  <div style="max-width:520px;margin:0 auto">
+
+    <a href="/teacher/subject/{{ quiz.subject.id }}/" class="back-link">← Артқа</a>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">⚙️ Тест баптаулары</span>
+        <span class="badge badge-muted">{{ quiz.subject.icon }} {{ quiz.subject.name }}</span>
+      </div>
+      <div class="card-body">
+
+        <div style="margin-bottom:20px;padding:12px 16px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
+          <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:4px">ТЕСТ</div>
+          <div style="font-size:15px;font-weight:700">{{ quiz.title }}</div>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="checkbox-item" style="cursor:pointer">
+              <input type="checkbox" name="is_marketplace" value="1"
+                     {% if quiz.is_marketplace %}checked{% endif %}
+                     style="width:18px;height:18px;accent-color:var(--primary);flex-shrink:0">
+              <div>
+                <div style="font-weight:600;font-size:14px">🛍️ Маркетплейсте жариялау</div>
+                <div style="font-size:13px;color:var(--text-muted);margin-top:2px">
+                  Басқа мұғалімдер бұл тестті көріп, өздеріне көшіре алады
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px">
+            💾 Сақтау
+          </button>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

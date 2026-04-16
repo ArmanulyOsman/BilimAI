@@ -332,6 +332,18 @@ def quiz_rename(request, quiz_id):
 
  
 @login_required
+def quiz_settings(request, quiz_id):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+    quiz = get_object_or_404(Quiz, id=quiz_id, teacher=request.user)
+    if request.method == 'POST':
+        quiz.is_marketplace = request.POST.get('is_marketplace') == '1'
+        quiz.save()
+        messages.success(request, 'Настройки сақталды!')
+        return redirect('quiz_settings', quiz_id=quiz.id)
+    return render(request, 'core/quiz_settings.html', {'quiz': quiz})
+
+@login_required
 def quiz_create_step1(request, subject_id):
     if not request.user.is_teacher:
         return redirect('student_dashboard')
@@ -342,6 +354,7 @@ def quiz_create_step1(request, subject_id):
             quiz = form.save(commit=False)
             quiz.subject = subject
             quiz.teacher = request.user
+            quiz.is_marketplace = request.POST.get('is_marketplace') == '1'
             quiz.save()
             return redirect('quiz_create_step2', quiz_id=quiz.id)
     else:
@@ -450,7 +463,7 @@ def marketplace(request):
     subject_id = request.GET.get('subject')
     search = request.GET.get('q', '').strip()
  
-    quizzes = Quiz.objects.exclude(teacher=request.user).filter(is_active=True)\
+    quizzes = Quiz.objects.exclude(teacher=request.user).filter(is_active=True, is_marketplace=True)\
         .select_related('teacher', 'subject')
  
     if subject_id:

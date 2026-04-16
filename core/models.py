@@ -53,6 +53,7 @@ class Quiz(models.Model):
     passing_score = models.IntegerField(default=60, verbose_name='Өту балы (%)')
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    is_marketplace = models.BooleanField(default=False, verbose_name='Маркетплейсте қол жетімді')
     copied_from = models.ForeignKey(
         'self', null=True, blank=True,
         on_delete=models.SET_NULL,
