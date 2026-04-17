@@ -79,7 +79,7 @@ class Quiz(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return self.title
+        return f"Quiz: {self.title}, id: {self.id}"
 
     def get_share_url(self):
         from django.urls import reverse
@@ -89,6 +89,7 @@ class Quiz(models.Model):
     def max_score(self):
         test_questions = self.test_questions.count()
         return test_questions * 10 if test_questions else 100
+    
 
 
 class OpenQuestion(models.Model):

@@ -1,45 +1,69 @@
 {% extends 'core/base.html' %}
-{% block title %}2-қадам: Теория — QAZ-intellect{% endblock %}
+{% block title %}Теория — {{ quiz.title }}{% endblock %}
 
 {% block content %}
 <div class="container page">
-  <div class="auth-card" style="max-width: 800px; margin: 0 auto;">
-    <div class="auth-header">
-      <div class="auth-logo">📖</div>
-      <h2 class="auth-title">Теориялық материал</h2>
-      <p class="auth-subtitle">Мәтін мен суретті жүктеңіз</p>
-    </div>
-    <div class="auth-body">
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        <div class="form-group">
-          <label class="form-label">Теория мазмұны</label>
-          <textarea name="theory_content" class="form-control" rows="10">{{ quiz.theory_content|default:'' }}</textarea>
-        </div>
+  <div style="max-width:640px;margin:0 auto">
 
-        <div class="form-group" style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 2px dashed #e2e8f0;">
-          <label class="form-label">🖼️ Теорияға сурет қосу</label>
-          {% if quiz.theory_image %}
-            <div style="margin-bottom: 10px;">
-              <img src="{{ quiz.theory_image.url }}" style="max-width: 100px; border-radius: 8px;">
-              <p style="font-size: 12px; color: #64748b;">Қазіргі сурет жүктелген</p>
+    <div class="steps" style="margin-bottom:24px">
+      <div class="step done"><div class="step-dot">✓</div><span class="step-label">Негізгі</span></div>
+      <div class="step active"><div class="step-dot">2</div><span class="step-label">Теория</span></div>
+      <div class="step"><div class="step-dot">3</div><span class="step-label">Ашық сұрақтар</span></div>
+      <div class="step"><div class="step-dot">4</div><span class="step-label">Тест</span></div>
+      <div class="step"><div class="step-dot">5</div><span class="step-label">Бөлісу</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📖 Теориялық материал</span>
+      </div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="form-label">Теория мазмұны</label>
+            <textarea name="theory_content" class="form-control" rows="12"
+                      placeholder="Теориялық материалды енгізіңіз...">{{ quiz.theory_content }}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Сурет (міндетті емес)</label>
+
+            {% if quiz.theory_image %}
+              <div style="margin-bottom:12px;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm)">
+                <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:8px">ҚАЗІРГІ СУРЕТ</div>
+                <img src="{{ quiz.theory_image.url }}" alt="Теория суреті"
+                     style="max-width:100%;max-height:200px;border-radius:var(--radius-sm);object-fit:contain">
+                <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer;font-size:13px;color:var(--danger)">
+                  <input type="checkbox" name="clear_theory_image" value="1"
+                         style="accent-color:var(--danger)">
+                  Суретті жою
+                </label>
+              </div>
+            {% endif %}
+
+            <input type="file" name="theory_image" class="form-control"
+                   accept="image/*" style="padding:8px">
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">
+              PNG, JPG, GIF — максимум 5MB
             </div>
-          {% endif %}
-          <input type="file" name="theory_image" class="form-control" accept="image/*">
-          <small class="text-muted">Оқушыларға көрнекі болу үшін схема немесе сурет қосыңыз.</small>
-        </div>
+          </div>
 
-        <div class="form-group" style="margin-top: 20px;">
-          <label class="form-label">Оқуға берілетін уақыт (минут)</label>
-          <input type="number" name="theory_time_minutes" class="form-control" value="{{ quiz.theory_time_minutes|default:10 }}">
-        </div>
+          <div class="form-group">
+            <label class="form-label">Оқуға уақыт (минут)</label>
+            <input type="number" name="theory_time_minutes" class="form-control"
+                   min="1" max="120" value="{{ quiz.theory_time_minutes }}">
+          </div>
 
-        <div class="form-actions" style="display:flex; gap:12px; margin-top:24px;">
-          <button type="submit" class="btn btn-primary btn-full">Сақтау және келесі қадам →</button>
-        </div>
-      </form>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <a href="/teacher/" class="btn btn-ghost">← Артқа</a>
+            <button type="submit" class="btn btn-primary">Жалғастыру →</button>
+          </div>
+        </form>
+      </div>
     </div>
+
   </div>
 </div>
 {% endblock %}

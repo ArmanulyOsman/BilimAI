@@ -366,15 +366,23 @@ def quiz_create_step1(request, subject_id):
 def quiz_create_step2(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id, teacher=request.user)
     if request.method == 'POST':
-        # request.FILES міндетті түрде қосылады
-        form = QuizTheoryForm(request.POST, request.FILES, instance=quiz)
-        if form.is_valid():
-            form.save()
-            return redirect('quiz_create_step3', quiz_id=quiz.id)
-    else:
-        form = QuizTheoryForm(instance=quiz)
-    return render(request, 'core/quiz_create_step2.html', {'form': form, 'quiz': quiz})
+        quiz.theory_content = request.POST.get('theory_content', '')
+        quiz.theory_time_minutes = int(request.POST.get('theory_time_minutes', 10))
 
+        # Удалить изображение если отмечен чекбокс
+        if request.POST.get('clear_theory_image') == '1' and quiz.theory_image:
+            quiz.theory_image.delete(save=False)
+            quiz.theory_image = None
+
+        # Загрузить новое изображение
+        if request.FILES.get('theory_image'):
+            quiz.theory_image = request.FILES['theory_image']
+
+        quiz.save()
+        return redirect('quiz_create_step3', quiz_id=quiz.id)
+
+    print(f"COPY from marketplace: {quiz}")
+    return render(request, 'core/quiz_create_step2.html', {'quiz': quiz})
 
 @login_required
 def quiz_create_step3(request, quiz_id):
@@ -501,6 +509,7 @@ def marketplace_copy(request, quiz_id):
         teacher=request.user,
         passing_score=original.passing_score,
         theory_content=original.theory_content,
+        theory_image=original.theory_image,
         theory_time_minutes=original.theory_time_minutes,
         block2_time_minutes=original.block2_time_minutes,
         block3_time_minutes=original.block3_time_minutes,
