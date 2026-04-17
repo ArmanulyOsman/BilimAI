@@ -539,3 +539,15 @@ def marketplace_copy(request, quiz_id):
     messages.success(request, f'«{original.title}» тесті сәтті көшірілді! Енді оны өңдей аласыз.')
     return redirect('quiz_create_step2', quiz_id=copy.id)
  
+ 
+@login_required
+def quiz_delete(request, quiz_id):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+    quiz = get_object_or_404(Quiz, id=quiz_id, teacher=request.user)
+    subject_id = quiz.subject_id
+    if request.method == 'POST':
+        quiz.delete()
+        messages.success(request, 'Тест сәтті жойылды!')
+        return redirect('teacher_subject_quizzes', subject_id=subject_id)
+    return redirect('quiz_settings', quiz_id=quiz_id)

@@ -41,6 +41,20 @@
           </button>
         </form>
 
+        <div class="divider" style="margin:24px 0"></div>
+
+        <div style="padding:16px;background:var(--danger-light);border:1px solid #FCA5A5;border-radius:var(--radius-sm)">
+          <div style="font-size:14px;font-weight:700;color:var(--danger);margin-bottom:4px">⚠️ Қауіпті аймақ</div>
+          <div style="font-size:13px;color:#991B1B;margin-bottom:12px">
+            Тестті жойсаңыз барлық нәтижелер мен оқушылардың жауаптары да жойылады. Бұл әрекетті қайтару мүмкін емес.
+          </div>
+          <form method="post" action="/teacher/quiz/{{ quiz.id }}/delete/"
+                onsubmit="return confirm('«{{ quiz.title }}» тестін шынымен жойғыңыз келе ме? Бұл әрекетті қайтару мүмкін емес!')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-full">🗑️ Тестті жою</button>
+          </form>
+        </div>
+
       </div>
     </div>
 
